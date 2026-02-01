@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client"
+  output   = "../src/generated"
 }
 
 datasource db {
@@ -70,6 +71,8 @@ model User {
 
   @@index([email])
   discussions Discussion[]
+  accounts Account[]
+  sessions Session[]
 }
 
 model Auth {
@@ -99,6 +102,41 @@ model UserRole {
 
   @@id([userId, role])
 }
+model Account {
+  id                String  @id @default(uuid()) @db.Uuid
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  sessionToken String   @unique
+  userId       String   @db.Uuid
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
 
 /* =========================
    PROBLEMS
@@ -107,6 +145,7 @@ model UserRole {
 model Problem {
   id          String      @id @default(uuid()) @db.Uuid
   title       String
+  image       String?
   slug        String      @unique
   description String
   difficulty  Difficulty
