@@ -2019,7 +2019,7 @@ export type PrismaClientOptions = ({
   /**
    * Prisma Accelerate URL allowing the client to connect through Accelerate instead of a direct database.
    */
-  accelerateUrl?: string
+  accelerateUrl: string
   adapter?: never
 }) & {
   /**
